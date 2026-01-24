@@ -16,15 +16,19 @@ class Button {
 
     onClick(event) {
         if (!this.isInside(event.clientX, event.clientY)) return;
+        console.log("clicked " + this.id);
         this.onClickFunc(event);
     }
 
     onMouseMove(event) {
         if (this.isInside(event.clientX, event.clientY)) {
+            console.log("hovering " + this.id);
             // mouse pointer
             this.element.style.cursor = "pointer";
+            this.element.style.borderColor = "red";
         } else {
             this.element.style.cursor = "default";
+            this.element.style.borderColor = "black";
         }
     }
 
@@ -42,13 +46,14 @@ class Button {
 let currentPageButtons = [];
 
 function createButton(btn) {
+    console.log("Creating button: " + btn.id);
     const el = document.createElement("button");
     el.id = btn.id;
     el.className = "ui-button";
     el.addEventListener("click", (event) => {
         btn.onClick(event);
     });
-    el.addEventListener("mousemove", (event) => {
+    document.addEventListener("mousemove", (event) => {
         btn.onMouseMove(event);
     });
     el.style.position = "absolute";
@@ -56,6 +61,9 @@ function createButton(btn) {
     el.style.top = btn.pos.y + "px";
     el.style.width = btn.size.width + "px";
     el.style.height = btn.size.height + "px";
+    el.style.border = "2px solid black";
+    el.style.background = "none";
+
 
     currentPageButtons.push(el);
     document.body.appendChild(el);
@@ -74,7 +82,7 @@ class EntranceDoorState extends State {
   enter() {
     console.log("Entering Entrance Door State");
     this.startButton = new Button("startButton", () => {
-      changeState(new MainGameState());
+      changeState(new KeycodeState());
     }, { x: 0, y: 0 }, { width: 200, height: 50 });
   }
 
@@ -89,6 +97,18 @@ class EntranceDoorState extends State {
 
 }
 
+class KeycodeState extends State {
+  enter() {
+    console.log("Entering Keycode State");
+  }
+  exit() {
+    console.log("Exiting Keycode State");
+    clearButtons();
+  }
+  update(dt) {}
+  render(ctx) {}
+}
+
 
 function changeState(next) {
   currentState.exit();
@@ -98,9 +118,10 @@ function changeState(next) {
 
 let currentState = new EntranceDoorState();
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+currentState.enter();
 
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
       
 let last = performance.now();
 
@@ -113,3 +134,5 @@ function loop(now) {
 
   requestAnimationFrame(loop);
 }
+
+requestAnimationFrame(loop);
