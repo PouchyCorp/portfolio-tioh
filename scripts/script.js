@@ -20,7 +20,7 @@ async function bootstrap() {
     end: 11 
   });
   backgroundkeypad = await loadImage({
-    path: "data/bg/porte"
+    path: "data/bg/porte" 
   });
   bouton1 = await loadImage({
     path: "data/boutons/bouton1.png"
