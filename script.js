@@ -153,12 +153,81 @@ class EntranceDoorState extends State {
 
 }
 
+
+function initPhysics() {
+  Physics(function(world){
+
+    var viewWidth = 500;
+    var viewHeight = 300;
+
+    var renderer = Physics.renderer('canvas', {
+      el: 'physics',
+      width: viewWidth,
+      height: viewHeight,
+      meta: false, 
+      styles: {
+          
+          'circle' : {
+              strokeStyle: '#351024',
+              lineWidth: 1,
+              fillStyle: '#d33682',
+              angleIndicator: '#351024'
+          }
+      }
+    });
+
+    world.add( renderer );
+    world.on('step', function(){
+      world.render();
+  });
+
+    // bounds of the window
+    var viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight);
+
+    // constrain objects to these bounds
+    world.add(Physics.behavior('edge-collision-detection', {
+        aabb: viewportBounds,
+        restitution: 0.99,
+        cof: 0.99
+    }));
+
+  // add a circle
+  world.add(
+      Physics.body('circle', {
+        x: 50, // x-coordinate
+        y: 30, // y-coordinate
+        vx: 0.2, // velocity in x-direction
+        vy: 0.01, // velocity in y-direction
+        radius: 20
+      })
+  );
+
+  // ensure objects bounce when edge collision is detected
+  world.add( Physics.behavior('body-impulse-response') );
+
+  // add some gravity
+  world.add( Physics.behavior('constant-acceleration') );
+
+  // subscribe to ticker to advance the simulation
+  Physics.util.ticker.on(function( time, dt ){
+
+      world.step( time );
+  });
+
+  // start the ticker
+  Physics.util.ticker.start();
+
+  });
+}
+
+
 class KeycodeState extends State {
   enter() {
     console.log("Entering Keycode State");
     this.startButton = new Button("startButton", () => {
       changeState(new TransitionToMainState());
     }, { x: 100, y: 50 }, { width: 100, height: 100 });
+    initPhysics();
   }
   exit() {
     console.log("Exiting Keycode State");
@@ -205,7 +274,7 @@ function changeState(next) {
 let currentState = new EntranceDoorState();
 currentState.enter();
 
-let canvas = document.getElementById("canvas");
+let canvas = document.getElementById("viewport");
 let ctx = canvas.getContext("2d");
 
 let last = performance.now();
@@ -235,47 +304,6 @@ async function bootstrap() {
 
   currentState = new EntranceDoorState();
   currentState.enter();
-
-  Physics(function (world) {
-
-    const renderer = Physics.renderer('canvas', {
-      el: 'canvas',
-      width: 1920,
-      height: 1080
-    }); 
-
-    world.add(renderer);
-    world.on('step', () => world.render());
-
-    Physics.util.ticker.on(time => {
-      world.step(time);
-    });
-
-    world.add([
-    ,Physics.behavior('body-impulse-response')
-    ,Physics.behavior('body-collision-detection')
-    ,Physics.behavior('sweep-prune')
-    ]);
-
-    world.add(
-      Physics.body('circle', {
-            x: 200
-            ,y: 200
-            ,radius: 10
-            ,mass: 1
-            ,restitution: 0.5
-            ,treatment: 'static'
-            ,styles: {
-                strokeStyle: "rgb(255,0,0)"
-                ,fillStyle: "rgb(0,0,255)"
-                ,lineWidth: 1
-            }
-        })
-    )
-
-    Physics.util.ticker.on(time => world.step(time));
-    Physics.util.ticker.start();
-  });
 
   last = performance.now();
   requestAnimationFrame(loop);
