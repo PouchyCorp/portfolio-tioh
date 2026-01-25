@@ -156,6 +156,7 @@ class EntranceDoorState extends State {
 
   exit() {
     console.log("Exiting Entrance Door State");
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     clearButtons();
   }
 
@@ -165,7 +166,6 @@ class EntranceDoorState extends State {
     console.log(backgroundkeypad)
     ctx.drawImage(backgroundkeypad, 0, 0); 
   }
-
 }
 
 
