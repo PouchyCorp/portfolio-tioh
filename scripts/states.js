@@ -1,3 +1,4 @@
+let beat = new Audio('data/sounds/blop.mp3');
 
 
 class State {
@@ -35,24 +36,36 @@ function initKeypadConfig() {
         onClickFunc: () => {
           currentState.onKeypadButtonClick(1);
         },
-        position: { x: 300, y: 400 },
-        size: { width: 200, height: 50 },
+        position: { x: 860, y: 350 },
+        size: { width: 50, height: 50 },
         hoverimg: bouton1_pushed,
         normalimg: bouton1,
-        hoverimgpos: { x: 0, y: 0 },
-        normalimgpos: { x: 0, y: 0 }
+        hoverimgpos: { x: -15, y: -15},
+        normalimgpos: { x: -15, y: -15 }
       },
       {
         id: "button2",
         onClickFunc: () => {
           currentState.onKeypadButtonClick(2);
         },
-        position: { x: 100, y: 100 },
-        size: { width: 100, height: 30 },
-        hoverimg: bouton2,
-        normalimg: bouton2_pushed,
+        position: { x: 930, y: 353 },
+        size: { width: 50, height: 50 },
+        hoverimg: bouton2_pushed, 
+        normalimg: bouton2,
         hoverimgpos: { x: 0, y: 0 },
-        normalimgpos: { x: 0, y: 0 }
+        normalimgpos: { x: -15, y: -15 }
+      },
+      {
+        id: "button3",
+        onClickFunc: () => {
+          currentState.onKeypadButtonClick(2);
+        },
+        position: { x: 1000, y: 356 },
+        size: { width: 50, height: 50 },
+        hoverimg: bouton3_pushed, 
+        normalimg: bouton3,
+        hoverimgpos: { x: 0, y: 0 },
+        normalimgpos: { x: -15, y: -15 }
       }];
 
 }
@@ -70,19 +83,22 @@ class KeycodeState extends State {
   }
 
   onKeypadButtonClick(number) {
-    let code = "6767"
-
+    let code = "2222"
+    beat.play()
     console.log("Keypad button clicked: " + number);
     this.pressedKeys.push(number);
     if (this.pressedKeys.length >= 4 && this.pressedKeys.slice(-4).join("") === code) {
       changeState(new TransitionToMainState());
+      
       // TODO play sound
     }
   }
   update(dt) { }
+  
   render(ctx) {
-    ctx.drawImage(backgroundkeypad, 0, 0);
+    
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(backgroundkeypad, 0, 0);
     for (const btn of this.buttons) {
       btn.render(ctx);
     }
