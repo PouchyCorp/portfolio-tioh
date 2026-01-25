@@ -1,5 +1,4 @@
-// State machine and states
-// Assumes AnimPlayer, loadPngSequence, loadImage, Button, clearButtons, initPhysics are globally available
+
 
 class State {
   enter() { }
@@ -26,30 +25,37 @@ class EntranceDoorState extends State {
   }
 }
 
-let keypadButtonConfig = [{
-      id: "button1",
-      onClickFunc: () => {
-        currentState.onKeypadButtonClick(1);
+let keypadButtonConfig = null;
+
+function initKeypadConfig() {
+
+
+  keypadButtonConfig = [{
+        id: "button1",
+        onClickFunc: () => {
+          currentState.onKeypadButtonClick(1);
+        },
+        position: { x: 300, y: 400 },
+        size: { width: 200, height: 50 },
+        hoverimg: null,
+        normalimg: null,
+        hoverimgpos: { x: 0, y: 0 },
+        normalimgpos: { x: 0, y: 0 }
       },
-      position: { x: 300, y: 400 },
-      size: { width: 200, height: 50 },
-      hoverimg: null,
-      normalimg: null,
-      hoverimgpos: { x: 0, y: 0 },
-      normalimgpos: { x: 0, y: 0 }
-    },
-    {
-      id: "button2",
-      onClickFunc: () => {
-        currentState.onKeypadButtonClick(2);
-      },
-      position: { x: 100, y: 100 },
-      size: { width: 100, height: 30 },
-      hoverimg: null,
-      normalimg: null,
-      hoverimgpos: { x: 0, y: 0 },
-      normalimgpos: { x: 0, y: 0 }
-    }];
+      {
+        id: "button2",
+        onClickFunc: () => {
+          currentState.onKeypadButtonClick(2);
+        },
+        position: { x: 100, y: 100 },
+        size: { width: 100, height: 30 },
+        hoverimg: null,
+        normalimg: null,
+        hoverimgpos: { x: 0, y: 0 },
+        normalimgpos: { x: 0, y: 0 }
+      }];
+
+}
 
 class KeycodeState extends State {
   enter() {

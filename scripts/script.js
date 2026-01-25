@@ -20,8 +20,10 @@ async function bootstrap() {
     end: 11 
   });
   backgroundkeypad = await loadImage({
-    path: "data/bg/porte"
+    path: "data/bg/porte" 
   });
+
+  initKeypadConfig();
   transitionAnimPlayer = new AnimPlayer(transitionFrames, 10);
   currentState = new EntranceDoorState();
   currentState.enter();
