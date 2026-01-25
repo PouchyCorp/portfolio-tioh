@@ -62,6 +62,18 @@ function loadPngSequence({ path, start, end }) {
   });
 }
 
+function loadImage({ path }) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = `${path}.png`;
+
+    img.onload = () => resolve(img);
+    img.onerror = () =>
+      reject(new Error(`Failed to load ${img.src}`));
+  });
+}
+
+
 class Button {
   constructor(id, onClickFunc, position, size) {
     this.id = id;
@@ -149,7 +161,10 @@ class EntranceDoorState extends State {
 
   update(dt) { }
 
-  render(ctx) { }
+  render(ctx) {
+    console.log(backgroundkeypad)
+    ctx.drawImage(backgroundkeypad, 0, 0); 
+  }
 
 }
 
@@ -211,6 +226,7 @@ let ctx = canvas.getContext("2d");
 let last = performance.now();
 
 let transitionAnimPlayer = null;
+let backgroundkeypad = null
 
 
 function loop(now) {
@@ -228,54 +244,20 @@ async function bootstrap() {
   const transitionFrames = await loadPngSequence({
     path: "data/papier_animation",
     start: 1,
-    end: 11
+    end: 11 
   });
+
+  backgroundkeypad = await loadImage({
+    path: "data/bg/porte"
+  });
+
+  console.log(backgroundkeypad)
 
   transitionAnimPlayer = new AnimPlayer(transitionFrames, 10);
 
   currentState = new EntranceDoorState();
   currentState.enter();
 
-  Physics(function (world) {
-
-    const renderer = Physics.renderer('canvas', {
-      el: 'canvas',
-      width: 1920,
-      height: 1080
-    }); 
-
-    world.add(renderer);
-    world.on('step', () => world.render());
-
-    Physics.util.ticker.on(time => {
-      world.step(time);
-    });
-
-    world.add([
-    ,Physics.behavior('body-impulse-response')
-    ,Physics.behavior('body-collision-detection')
-    ,Physics.behavior('sweep-prune')
-    ]);
-
-    world.add(
-      Physics.body('circle', {
-            x: 200
-            ,y: 200
-            ,radius: 10
-            ,mass: 1
-            ,restitution: 0.5
-            ,treatment: 'static'
-            ,styles: {
-                strokeStyle: "rgb(255,0,0)"
-                ,fillStyle: "rgb(0,0,255)"
-                ,lineWidth: 1
-            }
-        })
-    )
-
-    Physics.util.ticker.on(time => world.step(time));
-    Physics.util.ticker.start();
-  });
 
   last = performance.now();
   requestAnimationFrame(loop);
