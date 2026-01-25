@@ -26,20 +26,60 @@ class EntranceDoorState extends State {
   }
 }
 
+let keypadButtonConfig = [{
+      id: "button1",
+      onClickFunc: () => {
+        currentState.onKeypadButtonClick(1);
+      },
+      position: { x: 300, y: 400 },
+      size: { width: 200, height: 50 },
+      hoverimg: null,
+      normalimg: null,
+      hoverimgpos: { x: 0, y: 0 },
+      normalimgpos: { x: 0, y: 0 }
+    },
+    {
+      id: "button2",
+      onClickFunc: () => {
+        currentState.onKeypadButtonClick(2);
+      },
+      position: { x: 100, y: 100 },
+      size: { width: 100, height: 30 },
+      hoverimg: null,
+      normalimg: null,
+      hoverimgpos: { x: 0, y: 0 },
+      normalimgpos: { x: 0, y: 0 }
+    }];
+
 class KeycodeState extends State {
   enter() {
     console.log("Entering Keycode State");
-    this.startButton = new Button("startButton", () => {
-      changeState(new TransitionToMainState());
-    }, { x: 100, y: 50 }, { width: 100, height: 100 });
+    this.pressedKeys = [];
+    this.buttons = keypadButtonConfig.map(cfg => new Button(cfg.id, cfg.onClickFunc, cfg.position, cfg.size, cfg.hoverimg, cfg.normalimg, cfg.hoverimgpos, cfg.normalimgpos));
     initPhysics();
   }
   exit() {
     console.log("Exiting Keycode State");
     clearButtons();
   }
+
+  onKeypadButtonClick(number) {
+    let code = "6767"
+
+    console.log("Keypad button clicked: " + number);
+    this.pressedKeys.push(number);
+    if (this.pressedKeys.length >= 4 && this.pressedKeys.slice(-4).join("") === code) {
+      changeState(new TransitionToMainState());
+      // TODO play sound
+    }
+  }
   update(dt) { }
-  render(ctx) { }
+  render(ctx) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    for (const btn of this.buttons) {
+      btn.render(ctx);
+    }
+  }
 }
 
 class TransitionToMainState extends State {

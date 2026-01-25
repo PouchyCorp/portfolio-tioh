@@ -1,11 +1,15 @@
 // UI (Button) code
 
 class Button {
-  constructor(id, onClickFunc, position, size) {
+  constructor(id, onClickFunc, position, size, hoverimg, normalimg, hoverimgpos, normalimgpos) {
     this.id = id;
     this.pos = position;
     this.size = size;
     this.onClickFunc = onClickFunc;
+    this.hoverimg = hoverimg || null;
+    this.normalimg = normalimg || null;
+    this.hoverimgpos = hoverimgpos || { x: 0, y: 0 };
+    this.normalimgpos = normalimgpos || { x: 0, y: 0 };
     this.element = createButton(this);
   }
 
@@ -33,6 +37,15 @@ class Button {
       y >= rect.top &&
       y <= rect.bottom
     );
+  }
+
+  render(ctx) {
+    // custom rendering of button images
+    if (this.hoverimg && this.isHover) {
+      ctx.drawImage(this.hoverimg, this.pos.x + this.hoverimgpos.x, this.pos.y + this.hoverimgpos.y);
+    } else if (this.normalimg) {
+      ctx.drawImage(this.normalimg, this.pos.x + this.normalimgpos.x, this.pos.y + this.normalimgpos.y);
+    }
   }
 }
 
