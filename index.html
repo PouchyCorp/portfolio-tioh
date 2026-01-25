@@ -6,9 +6,17 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <canvas id="canvas" width="1920" height="1080"></canvas>
+    <div id="stage">
+      <canvas id="physics" width="1920" height="1080"></canvas>
+      <canvas id="viewport" width="1920" height="1080"></canvas>
+    </div>
+    
   </body>
 
   <script src="libs/physicsjs-full.min.js"></script>
-  <script src="script.js"></script>
+  <script src="scripts/utils.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/physics.js"></script>
+  <script src="scripts/states.js"></script>
+  <script src="scripts/script.js"></script>
 </html> 
