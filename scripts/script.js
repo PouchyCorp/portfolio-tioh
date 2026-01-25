@@ -19,40 +19,45 @@ async function bootstrap() {
     start: 1,
     end: 11 
   });
-  backgroundkeypad = await loadImage({
+  backgroundenter = await loadImage({
     path: "data/bg/porte" 
   });
+  backgroundkeypad = await loadImage({
+    path: "data/bg/keypad" 
+  });
   bouton1 = await loadImage({
-    path: "data/boutons/bouton1.png"
+    path: "data/boutons/bouton1"
   });
   bouton1_pushed = await loadImage({
-    path: "data/boutons/bouton1_pushed.png"
+    path: "data/boutons/bouton1_pushed"
   });
   bouton2 = await loadImage({
-    path: "data/boutons/bouton1.png"
+    path: "data/boutons/bouton2"
   });
   bouton2_pushed = await loadImage({
-    path: "data/boutons/bouton1_pushed.png"
+    path: "data/boutons/bouton2_pushed"
   });
     bouton3 = await loadImage({
-    path: "data/boutons/bouton1.png"
+    path: "data/boutons/bouton3"
   });
   bouton3_pushed = await loadImage({
-    path: "data/boutons/bouton1_pushed.png"
+    path: "data/boutons/bouton3_pushed"
   });
     bouton4 = await loadImage({
-    path: "data/boutons/bouton1.png"
+    path: "data/boutons/bouton4"
   });
   bouton4_pushed = await loadImage({
-    path: "data/boutons/bouton1_pushed.png"
+    path: "data/boutons/bouton4_pushed"
   });
     bouton5 = await loadImage({
-    path: "data/boutons/bouton1.png"
+    path: "data/boutons/bouton1"
   });
   bouton5_pushed = await loadImage({
-    path: "data/boutons/bouton1_pushed.png"
+    path: "data/boutons/bouton1_pushed"
   });
-  
+
+
+  initKeypadConfig();
   transitionAnimPlayer = new AnimPlayer(transitionFrames, 10);
   currentState = new EntranceDoorState();
   currentState.enter();

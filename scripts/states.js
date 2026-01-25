@@ -21,7 +21,7 @@ class EntranceDoorState extends State {
   }
   update(dt) { }
   render(ctx) {
-    ctx.drawImage(backgroundkeypad, 0, 0);
+    ctx.drawImage(backgroundenter, 0, 0);
   }
 }
 
@@ -37,8 +37,8 @@ function initKeypadConfig() {
         },
         position: { x: 300, y: 400 },
         size: { width: 200, height: 50 },
-        hoverimg: null,
-        normalimg: null,
+        hoverimg: bouton1_pushed,
+        normalimg: bouton1,
         hoverimgpos: { x: 0, y: 0 },
         normalimgpos: { x: 0, y: 0 }
       },
@@ -49,8 +49,8 @@ function initKeypadConfig() {
         },
         position: { x: 100, y: 100 },
         size: { width: 100, height: 30 },
-        hoverimg: null,
-        normalimg: null,
+        hoverimg: bouton2,
+        normalimg: bouton2_pushed,
         hoverimgpos: { x: 0, y: 0 },
         normalimgpos: { x: 0, y: 0 }
       }];
@@ -81,10 +81,12 @@ class KeycodeState extends State {
   }
   update(dt) { }
   render(ctx) {
+    ctx.drawImage(backgroundkeypad, 0, 0);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     for (const btn of this.buttons) {
       btn.render(ctx);
     }
+    
   }
 }
 
