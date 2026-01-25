@@ -33,8 +33,8 @@ let keypadButtonConfig = [{
       },
       position: { x: 300, y: 400 },
       size: { width: 200, height: 50 },
-      hoverimg: null,
-      normalimg: null,
+      hoverimg: bouton1,
+      normalimg: bouton1_pushed,
       hoverimgpos: { x: 0, y: 0 },
       normalimgpos: { x: 0, y: 0 }
     },
