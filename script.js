@@ -1,8 +1,65 @@
 class State {
-  enter() {}
-  exit() {}
-  update(dt) {}
-  render(ctx) {}
+  enter() { }
+  exit() { }
+  update(dt) { }
+  render(ctx) { }
+}
+
+class AnimPlayer {
+  constructor(frames, speed = 10) {
+    this.frames = frames;
+    this.index = 0;
+    this.speed = speed;
+    this.time = 0;
+    this.done = false;
+  }
+
+  update(dt) {
+    if (this.done) return;
+
+    this.time += dt * 1000; // ms
+
+    if (this.time >= 1000 / this.speed) {
+      this.time -= 1000 / this.speed;
+      this.index++;
+
+      if (this.index >= this.frames.length) {
+        this.index = this.frames.length - 1;
+        this.done = true;
+      }
+    }
+  }
+
+  render(ctx, x, y) {
+    const frame = this.frames[this.index];
+    ctx.drawImage(frame, x, y);
+  }
+}
+
+function loadPngSequence({ path, start, end }) {
+  const frames = [];
+  let loaded = 0;
+  const total = end - start + 1;
+
+  return new Promise((resolve, reject) => {
+    for (let i = start; i <= end; i++) {
+      const img = new Image();
+      img.src = `${path}/${i}.png`;
+
+      img.onload = () => {
+        loaded++;
+        if (loaded === total) {
+          resolve(frames);
+        }
+      };
+
+      img.onerror = () => {
+        reject(new Error(`Failed to load ${img.src}`));
+      };
+
+      frames.push(img);
+    }
+  });
 }
 
 class Button {
@@ -14,67 +71,66 @@ class Button {
     this.element = createButton(this);
   }
 
-    onClick(event) {
-        if (!this.isInside(event.clientX, event.clientY)) return;
-        console.log("clicked " + this.id);
-        this.onClickFunc(event);
-    }
+  onClick(event) {
+    if (!this.isInside(event.clientX, event.clientY)) return;
+    console.log("clicked " + this.id);
+    this.onClickFunc(event);
+  }
 
-    onMouseMove(event) {
-        if (this.isInside(event.clientX, event.clientY)) {
-            console.log("hovering " + this.id);
-            // mouse pointer
-            this.element.style.cursor = "pointer";
-            this.element.style.borderColor = "red";
-        } else {
-            this.element.style.cursor = "default";
-            this.element.style.borderColor = "black";
-        }
+  onMouseMove(event) {
+    if (this.isInside(event.clientX, event.clientY)) {
+      // mouse pointer
+      this.element.style.cursor = "pointer";
+      this.element.style.borderColor = "red";
+    } else {
+      this.element.style.cursor = "default";
+      this.element.style.borderColor = "black";
     }
+  }
 
-    isInside(x, y) {
-        const rect = this.element.getBoundingClientRect();
-        return (
-            x >= rect.left &&
-            x <= rect.right &&
-            y >= rect.top &&
-            y <= rect.bottom
-        );
-    }
+  isInside(x, y) {
+    const rect = this.element.getBoundingClientRect();
+    return (
+      x >= rect.left &&
+      x <= rect.right &&
+      y >= rect.top &&
+      y <= rect.bottom
+    );
+  }
 }
 
 let currentPageButtons = [];
 
 function createButton(btn) {
-    console.log("Creating button: " + btn.id);
-    const el = document.createElement("button");
-    el.id = btn.id;
-    el.className = "ui-button";
-    el.addEventListener("click", (event) => {
-        btn.onClick(event);
-    });
-    document.addEventListener("mousemove", (event) => {
-        btn.onMouseMove(event);
-    });
-    el.style.position = "absolute";
-    el.style.left = btn.pos.x + "px";
-    el.style.top = btn.pos.y + "px";
-    el.style.width = btn.size.width + "px";
-    el.style.height = btn.size.height + "px";
-    el.style.border = "2px solid black";
-    el.style.background = "none";
+  console.log("Creating button: " + btn.id);
+  const el = document.createElement("button");
+  el.id = btn.id;
+  el.className = "ui-button";
+  el.addEventListener("click", (event) => {
+    btn.onClick(event);
+  });
+  document.addEventListener("mousemove", (event) => {
+    btn.onMouseMove(event);
+  });
+  el.style.position = "absolute";
+  el.style.left = btn.pos.x + "px";
+  el.style.top = btn.pos.y + "px";
+  el.style.width = btn.size.width + "px";
+  el.style.height = btn.size.height + "px";
+  el.style.border = "2px solid black";
+  el.style.background = "none";
 
 
-    currentPageButtons.push(el);
-    document.body.appendChild(el);
-    return el;
+  currentPageButtons.push(el);
+  document.body.appendChild(el);
+  return el;
 }
 
 function clearButtons() {
-    currentPageButtons.forEach((btn) => {
-        document.body.removeChild(btn);
-    });
-    currentPageButtons = [];
+  currentPageButtons.forEach((btn) => {
+    document.body.removeChild(btn);
+  });
+  currentPageButtons = [];
 }
 
 // entrance door state
@@ -90,25 +146,55 @@ class EntranceDoorState extends State {
     console.log("Exiting Entrance Door State");
     clearButtons();
   }
-  
-  update(dt) {}
-  
-  render(ctx) {}
+
+  update(dt) { }
+
+  render(ctx) { }
 
 }
 
 class KeycodeState extends State {
   enter() {
     console.log("Entering Keycode State");
+    this.startButton = new Button("startButton", () => {
+      changeState(new TransitionToMainState());
+    }, { x: 100, y: 50 }, { width: 100, height: 100 });
   }
   exit() {
     console.log("Exiting Keycode State");
     clearButtons();
   }
-  update(dt) {}
-  render(ctx) {}
+  update(dt) { }
+  render(ctx) { }
 }
 
+class TransitionToMainState extends State {
+  enter() {
+    console.log("Entering Transition To Main State");
+    this.animPlayer = transitionAnimPlayer;
+    console.log(this.animPlayer)
+  }
+  exit() {
+    console.log("Exiting Transition To Main State");
+    clearButtons();
+  }
+  update(dt) {
+    this.animPlayer.update(dt);
+    if (this.animPlayer.done) {
+      changeState(new MainState());
+    }
+  }
+  render(ctx) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this.animPlayer.render(ctx, 0, 0);
+  }
+}
+
+class MainState extends State {
+  enter() {
+    console.log("Entering Main State");
+  }
+}
 
 function changeState(next) {
   currentState.exit();
@@ -117,13 +203,15 @@ function changeState(next) {
 }
 
 let currentState = new EntranceDoorState();
-
 currentState.enter();
 
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
-      
+
 let last = performance.now();
+
+let transitionAnimPlayer = null;
+
 
 function loop(now) {
   const dt = (now - last) / 1000;
@@ -135,4 +223,63 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
-requestAnimationFrame(loop);
+async function bootstrap() {
+  // Load assets here
+  const transitionFrames = await loadPngSequence({
+    path: "data/papier_animation",
+    start: 1,
+    end: 11
+  });
+
+  transitionAnimPlayer = new AnimPlayer(transitionFrames, 10);
+
+  currentState = new EntranceDoorState();
+  currentState.enter();
+
+  Physics(function (world) {
+
+    const renderer = Physics.renderer('canvas', {
+      el: 'canvas',
+      width: 1920,
+      height: 1080
+    }); 
+
+    world.add(renderer);
+    world.on('step', () => world.render());
+
+    Physics.util.ticker.on(time => {
+      world.step(time);
+    });
+
+    world.add([
+    ,Physics.behavior('body-impulse-response')
+    ,Physics.behavior('body-collision-detection')
+    ,Physics.behavior('sweep-prune')
+    ]);
+
+    world.add(
+      Physics.body('circle', {
+            x: 200
+            ,y: 200
+            ,radius: 10
+            ,mass: 1
+            ,restitution: 0.5
+            ,treatment: 'static'
+            ,styles: {
+                strokeStyle: "rgb(255,0,0)"
+                ,fillStyle: "rgb(0,0,255)"
+                ,lineWidth: 1
+            }
+        })
+    )
+
+    Physics.util.ticker.on(time => world.step(time));
+    Physics.util.ticker.start();
+  });
+
+  last = performance.now();
+  requestAnimationFrame(loop);
+
+}
+
+bootstrap();
