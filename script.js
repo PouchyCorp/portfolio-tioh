@@ -62,6 +62,18 @@ function loadPngSequence({ path, start, end }) {
   });
 }
 
+function loadImage({ path }) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = `${path}.png`;
+
+    img.onload = () => resolve(img);
+    img.onerror = () =>
+      reject(new Error(`Failed to load ${img.src}`));
+  });
+}
+
+
 class Button {
   constructor(id, onClickFunc, position, size) {
     this.id = id;
@@ -149,7 +161,10 @@ class EntranceDoorState extends State {
 
   update(dt) { }
 
-  render(ctx) { }
+  render(ctx) {
+    console.log(backgroundkeypad)
+    ctx.drawImage(backgroundkeypad, 0, 0); 
+  }
 
 }
 
@@ -280,6 +295,7 @@ let ctx = canvas.getContext("2d");
 let last = performance.now();
 
 let transitionAnimPlayer = null;
+let backgroundkeypad = null
 
 
 function loop(now) {
@@ -297,13 +313,20 @@ async function bootstrap() {
   const transitionFrames = await loadPngSequence({
     path: "data/papier_animation",
     start: 1,
-    end: 11
+    end: 11 
   });
+
+  backgroundkeypad = await loadImage({
+    path: "data/bg/porte"
+  });
+
+  console.log(backgroundkeypad)
 
   transitionAnimPlayer = new AnimPlayer(transitionFrames, 10);
 
   currentState = new EntranceDoorState();
   currentState.enter();
+
 
   last = performance.now();
   requestAnimationFrame(loop);
