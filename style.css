@@ -1,5 +1,7 @@
 #stage {
-position: relative;
+position: absolute;
+top: 0;
+left: 0;
 width: 1920px;
 height: 1080px;
 }
@@ -13,10 +15,14 @@ left: 0;
 
 #physics {
 z-index: 0;
-pointer-events: none;
 }
 
 #viewport {
 z-index: 1;
 pointer-events: none;
+}
+
+button.ui-button {
+position: absolute;
+z-index: 5;
 }
