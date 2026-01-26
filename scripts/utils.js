@@ -28,14 +28,14 @@ class AnimPlayer {
   }
 }
 
-function loadPngSequence({ path, start, end }) {
+function loadPngSequence({ path, start, end, prefix, suffix}) {
   const frames = [];
   let loaded = 0;
   const total = end - start + 1;
   return new Promise((resolve, reject) => {
     for (let i = start; i <= end; i++) {
       const img = new Image();
-      img.src = `${path}/${i}.png`;
+      img.src = `${path}/${prefix}${i}${suffix}`;
       img.onload = () => {
         loaded++;
         if (loaded === total) {
@@ -57,4 +57,15 @@ function loadImage({ path }) {
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(`Failed to load ${img.src}`));
   });
+}
+
+function resizeCanvas(ctx, canvas) {
+  const dpr = window.devicePixelRatio || 1;
+
+  const rect = canvas.getBoundingClientRect();
+
+  canvas.width  = rect.width  * dpr;
+  canvas.height = rect.height * dpr;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }

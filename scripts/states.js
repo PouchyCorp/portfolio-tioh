@@ -75,7 +75,6 @@ class KeycodeState extends State {
     console.log("Entering Keycode State");
     this.pressedKeys = [];
     this.buttons = keypadButtonConfig.map(cfg => new Button(cfg.id, cfg.onClickFunc, cfg.position, cfg.size, cfg.hoverimg, cfg.normalimg, cfg.hoverimgpos, cfg.normalimgpos));
-    initPhysics();
   }
   exit() {
     console.log("Exiting Keycode State");
@@ -113,6 +112,7 @@ class TransitionToMainState extends State {
   }
   exit() {
     console.log("Exiting Transition To Main State");
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     clearButtons();
   }
   update(dt) {
@@ -130,6 +130,7 @@ class TransitionToMainState extends State {
 class MainState extends State {
   enter() {
     console.log("Entering Main State");
+    initPhysics();
   }
 }
 

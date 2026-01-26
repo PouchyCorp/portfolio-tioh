@@ -14,10 +14,20 @@ function loop(now) {
 
 async function bootstrap() {
   // Load assets here
-  const transitionFrames = await loadPngSequence({
+  const paperFrames = await loadPngSequence({
     path: "data/papier_animation",
     start: 1,
-    end: 11 
+    end: 11,
+    prefix: "",
+    suffix: ".png"
+  });
+  const transitionFrames = await loadPngSequence({
+    path: "data/cinematic",
+    start: 1000,
+    end: 1156,
+    prefix: "Séquence 0",
+    suffix: ".jpg"
+
   });
   backgroundenter = await loadImage({
     path: "data/bg/porte" 
@@ -56,9 +66,11 @@ async function bootstrap() {
     path: "data/boutons/bouton1_pushed"
   });
 
-
+  window.addEventListener("resize", () => resizeCanvas(ctx, canvas));
+  resizeCanvas(ctx, canvas);
   initKeypadConfig();
-  transitionAnimPlayer = new AnimPlayer(transitionFrames, 10);
+  transitionAnimPlayer = new AnimPlayer(transitionFrames, 20);
+  paperAnimPlayer = new AnimPlayer(paperFrames, 10);
   currentState = new EntranceDoorState();
   currentState.enter();
   last = performance.now();
