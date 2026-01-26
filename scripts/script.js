@@ -12,6 +12,9 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
+let transitionAnimPlayer = null;
+let backgroundkeypad = null;
+
 async function bootstrap() {
   // Load assets here
   const paperFrames = await loadPngSequence({
@@ -69,9 +72,12 @@ async function bootstrap() {
   window.addEventListener("resize", () => resizeCanvas(ctx, canvas));
   resizeCanvas(ctx, canvas);
   initKeypadConfig();
-  transitionAnimPlayer = new AnimPlayer(transitionFrames, 20);
+
+
+  transitionAnimPlayer = new AnimPlayer(transitionFrames, 30);
   paperAnimPlayer = new AnimPlayer(paperFrames, 10);
   currentState = new EntranceDoorState();
+
   currentState.enter();
   last = performance.now();
   requestAnimationFrame(loop);

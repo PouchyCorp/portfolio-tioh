@@ -140,6 +140,3 @@ function changeState(next) {
   currentState.enter();
 }
 
-let currentState = new EntranceDoorState();
-let transitionAnimPlayer = null;
-let backgroundkeypad = null;
