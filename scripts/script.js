@@ -26,10 +26,10 @@ async function bootstrap() {
   });
   const transitionFrames = await loadPngSequence({
     path: "data/cinematic",
-    start: 1000,
-    end: 1156,
-    prefix: "Séquence 0",
-    suffix: ".jpg"
+    start: 1,
+    end: 157,
+    prefix: "0 (",
+    suffix: ").jpg"
 
   });
   backgroundenter = await loadImage({

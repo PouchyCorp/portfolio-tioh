@@ -107,7 +107,7 @@ class KeycodeState extends State {
 class TransitionToMainState extends State {
   enter() {
     console.log("Entering Transition To Main State");
-    this.animPlayer = cinematicPlayer;
+    this.animPlayer = transitionAnimPlayer;
   }
   exit() {
     console.log("Exiting Transition To Main State");
@@ -138,8 +138,3 @@ function changeState(next) {
   currentState = next;
   currentState.enter();
 }
-
-let currentState = new EntranceDoorState();
-let transitionAnimPlayer = null;
-let cinematicPlayer = null
-let backgroundkeypad = null;
