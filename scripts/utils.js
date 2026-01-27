@@ -50,6 +50,29 @@ function loadPngSequence({ path, start, end }) {
   });
 }
 
+
+function loadJpgSequence({ path, start, end }) {
+  const frames = [];
+  let loaded = 0;
+  const total = end - start + 1;
+  return new Promise((resolve, reject) => {
+    for (let i = start; i <= end; i++) {
+      const img = new Image();
+      img.src = `${path}/0 (${i}).jpg`;
+      img.onload = () => {
+        loaded++;
+        if (loaded === total) {
+          resolve(frames);
+        }
+      };
+      img.onerror = () => {
+        reject(new Error(`Failed to load ${img.src}`));
+      };
+      frames.push(img);
+    }
+  });
+}
+
 function loadImage({ path }) {
   return new Promise((resolve, reject) => {
     const img = new Image();

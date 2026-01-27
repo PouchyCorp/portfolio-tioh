@@ -4,6 +4,7 @@ top: 0;
 left: 0;
 width: 1920px;
 height: 1080px;
+overflow: hidden
 }
 
 
@@ -25,4 +26,10 @@ pointer-events: none;
 button.ui-button {
 position: absolute;
 z-index: 5;
+}
+
+html, body {
+  margin: 0;
+
+  overflow: hidden;
 }

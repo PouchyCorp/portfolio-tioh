@@ -19,6 +19,11 @@ async function bootstrap() {
     start: 1,
     end: 11 
   });
+  const cinematic = await loadJpgSequence({
+    path: "data/cinematic",
+    start: 1,
+    end: 156
+  })
   backgroundenter = await loadImage({
     path: "data/bg/porte" 
   });
@@ -59,6 +64,7 @@ async function bootstrap() {
 
   initKeypadConfig();
   transitionAnimPlayer = new AnimPlayer(transitionFrames, 10);
+  cinematicPlayer = new AnimPlayer(cinematic,20 )
   currentState = new EntranceDoorState();
   currentState.enter();
   last = performance.now();

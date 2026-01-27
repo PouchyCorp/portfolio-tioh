@@ -89,14 +89,13 @@ class KeycodeState extends State {
     this.pressedKeys.push(number);
     if (this.pressedKeys.length >= 4 && this.pressedKeys.slice(-4).join("") === code) {
       changeState(new TransitionToMainState());
-      
       // TODO play sound
     }
   }
-  update(dt) { }
+  update(dt) {}
+   
   
   render(ctx) {
-    
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.drawImage(backgroundkeypad, 0, 0);
     for (const btn of this.buttons) {
@@ -109,7 +108,7 @@ class KeycodeState extends State {
 class TransitionToMainState extends State {
   enter() {
     console.log("Entering Transition To Main State");
-    this.animPlayer = transitionAnimPlayer;
+    this.animPlayer = cinematicPlayer;
   }
   exit() {
     console.log("Exiting Transition To Main State");
@@ -141,4 +140,5 @@ function changeState(next) {
 
 let currentState = new EntranceDoorState();
 let transitionAnimPlayer = null;
+let cinematicPlayer = null
 let backgroundkeypad = null;
