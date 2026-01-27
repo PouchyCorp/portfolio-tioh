@@ -9,13 +9,12 @@ overflow: hidden
 
 
 #stage canvas {
-position: absolute;
-top: 0;
-left: 0;
-}
-
-#physics {
-z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;        
+  width: 100vw;
+  height: 100vh;
 }
 
 #viewport {
@@ -24,7 +23,6 @@ pointer-events: none;
 }
 
 button.ui-button {
-position: absolute;
 z-index: 5;
 }
 

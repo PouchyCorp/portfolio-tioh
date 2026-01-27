@@ -1,128 +1,120 @@
 // Physics logic
+const MAX_SPEED = 5;
 
-function getBodyAt(world, x, y) {
-  const bodies = world.find({
-    $at: Physics.vector(x, y)
-  });
-  return bodies[0] || null;
-}
 
 function initPhysics() {
-  let world =
-  Physics(function (world) {
-    var viewWidth = 500;
-    var viewHeight = 300;
-    var renderer = Physics.renderer('canvas', {
-      el: 'physics',
-      width: viewWidth,
-      height: viewHeight,
-      meta: false,
-      styles: {
-        'circle': {
-          strokeStyle: '#351024',
-          lineWidth: 1,
-          fillStyle: '#d33682',
-          angleIndicator: '#351024'
+  var Engine = Matter.Engine,
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    Bodies = Matter.Bodies,
+    Composite = Matter.Composite,
+    MouseConstraint = Matter.MouseConstraint,
+    Mouse = Matter.Mouse,
+    Events = Matter.Events,
+    Body = Matter.Body;
+
+  // create an engine
+  var engine = Engine.create(
+    options = {
+      gravity: { x: 0, y: 0 }
+    }
+  );
+
+  const container = document.querySelector('#stage')
+
+  // create a renderer
+  var render = Render.create({
+    element: container,
+    engine: engine,
+    options: {
+      width: container.clientWidth,
+      height: container.clientHeight,
+      wireframes: false,
+      background: 'transparent',
+    }
+  });
+
+  // create two boxes and a ground
+  let circleA = Bodies.circle(150, 100, 100, { restitution: 1, friction: 0, frictionAir: 0 });
+  let circleB = Bodies.circle(300, 100, 100, { restitution: 1, friction: 0, frictionAir: 0 });
+
+  // add all of the bodies to the world
+  Composite.add(engine.world, [circleA, circleB]);
+
+
+
+
+  function createBounds(width, height, thickness = 100) {
+    return [
+      // floor
+      Bodies.rectangle(width / 2, height + thickness / 2, width, thickness, {
+        isStatic: true,
+        restitution: 1,
+        friction: 0
+      }),
+      // ceiling
+      Bodies.rectangle(width / 2, -thickness / 2, width, thickness, {
+        isStatic: true,
+        friction: 0,
+        restitution: 1
+      }),
+      // left
+      Bodies.rectangle(-thickness / 2, height / 2, thickness, height, {
+        isStatic: true,
+        friction: 0,
+        restitution: 1
+      }),
+      // right
+      Bodies.rectangle(width + thickness / 2, height / 2, thickness, height, {
+        isStatic: true,
+        friction: 0,
+        restitution: 1
+      }),
+    ];
+  }
+
+  let bounds = createBounds(container.clientWidth, container.clientHeight);
+  Composite.add(engine.world, bounds);
+
+  var mouse = Mouse.create(render.canvas),
+    mouseConstraint = MouseConstraint.create(engine, {
+      mouse: mouse,
+      constraint: {
+        stiffness: 0.2,
+        render: {
+          visible: false
         }
       }
     });
-    world.add(renderer);
-    world.on('step', function () {
-      world.render();
-    });
-    var viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight);
-    world.add(Physics.behavior('edge-collision-detection', {
-      aabb: viewportBounds,
-      restitution: 0.99,
-      cof: 0.99
-    }));
-    world.add(
-      Physics.body('circle', {
-        x: 50,
-        y: 30,
-        vx: 0.2,
-        vy: 0.01,
-        radius: 20
-      })
-    );
-    world.add(Physics.behavior('body-impulse-response'));
-    world.add(Physics.behavior('constant-acceleration'));
-    Physics.util.ticker.on(function (time, dt) {
-      world.step(time);
-    });
-    Physics.util.ticker.start();
-  });
 
-  const canvas = document.getElementById('physics');
+  Composite.add(engine.world, mouseConstraint);
 
-  const mouse = {
-    x: 0,
-    y: 0,
-    down: false
-  };
+  Events.on(engine, "beforeUpdate", () => {
+    for (const body of engine.world.bodies) {
+      if (body.isStatic) continue;
 
-  let dragConstraint = null;
-  let draggedBody = null;
+      const v = body.velocity;
+      const speed = Math.hypot(v.x, v.y);
 
-  let mouseGhostObject = Physics.body('point', {
-        treatment : 'static',
-        hidden: true,
-        x: mouse.x,
-        y: mouse.y
-      });
-
-    console.log(mouseGhostObject);
-
-  
-
-  canvas.addEventListener('mousedown', e => {
-    mouse.down = true;
-    updateMouse(e);
-    mouseGhostObject.x = mouse.x;
-    mouseGhostObject.y = mouse.y;
-    world.add(mouseGhostObject);
-
-    const body = getBodyAt(world, mouse.x, mouse.y);
-    console.log("Dragging body:", body);
-    if (!body) return;
-
-    draggedBody = body;
-
-    dragConstraint = Physics.behavior('verlet-constraints').distanceConstraint(
-      body,
-      mouseGhostObject,
-      0.8,
-      Physics.vector(mouse.x, mouse.y)
-    );
-
-    console.log(dragConstraint);
-    world.add(dragConstraint);
+      if (speed > MAX_SPEED) {
+        const scale = MAX_SPEED / speed;
+        Body.setVelocity(body, {
+          x: v.x * scale,
+          y: v.y * scale,
+        });
+      }
+    }
   });
 
 
-  canvas.addEventListener('mousemove', e => {
-    if (!dragConstraint) return;
+  // run the renderer
+  Render.run(render);
 
-    updateMouse(e);
-    mouseGhostObject.state.pos.set(mouse.x, mouse.y);
-  });
+  // create runner
+  var runner = Runner.create();
 
+  // run the engine
+  Runner.run(runner, engine);
 
-  canvas.addEventListener('mouseup', () => {
-    if (!dragConstraint) return;
-
-    Physics.behavior('verlet-constraints').drop();
-    world.remove(mouseGhostObject);
-    dragConstraint = null;
-    draggedBody = null;
-  });
-
-
-
-
-  function updateMouse(e) {
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
-  }
+  console.log('Physics initialized');
 }
