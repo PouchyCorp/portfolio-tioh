@@ -1,0 +1,14 @@
+
+
+.info .rightcollumn {
+    padding: 15px;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.info .leftcollumn {
+    float: left;
+    width: 45%;
+    margin-right: 5%;
+}

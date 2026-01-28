@@ -76,7 +76,7 @@ async function bootstrap() {
 
   transitionAnimPlayer = new AnimPlayer(transitionFrames, 30);
   paperAnimPlayer = new AnimPlayer(paperFrames, 10);
-  currentState = new EntranceDoorState();
+  currentState = new MainState();
 
   currentState.enter();
   last = performance.now();

@@ -31,3 +31,43 @@ html, body {
 
   overflow: hidden;
 }
+
+#center-bounds {
+  position : absolute;
+  top: 50%;
+	left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border: 2px dashed red;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+}
+
+
+.fadeIn {
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+.fadeOut {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity:1;
+  }
+  100% {
+    opacity:0;
+  }
+}
