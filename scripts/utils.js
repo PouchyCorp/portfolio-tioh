@@ -7,9 +7,21 @@ class AnimPlayer {
     this.speed = speed;
     this.time = 0;
     this.done = false;
+    this.justDone = false;
+  }
+
+  reset() {
+    this.index = 0;
+    this.time = 0;
+    this.done = false;
+    this.justDone = false;
   }
 
   update(dt) {
+    if (this.justDone) {
+      this.justDone = false;
+      return;
+    }
     if (this.done) return;
     this.time += dt * 1000; // ms
     if (this.time >= 1000 / this.speed) {
@@ -18,6 +30,7 @@ class AnimPlayer {
       if (this.index >= this.frames.length) {
         this.index = this.frames.length - 1;
         this.done = true;
+        this.justDone = true;
       }
     }
   }

@@ -23,7 +23,7 @@ pointer-events: none;
 }
 
 button.ui-button {
-z-index: 5;
+z-index: 30;
 }
 
 html, body {
@@ -43,6 +43,20 @@ html, body {
   pointer-events: none;
   z-index: 10;
   opacity: 0;
+}
+
+#works-frame {
+  position: absolute;
+  top: 50%;
+	left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  height: 50vh;
+  border: none;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  background-color: transparent;
 }
 
 
@@ -70,4 +84,12 @@ html, body {
   100% {
     opacity:0;
   }
+}
+
+.longFadeIn {
+  animation: fadeIn 2s forwards;
+}
+
+.longFadeOut {
+  animation: fadeOut 2s forwards;
 }

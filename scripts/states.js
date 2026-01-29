@@ -91,9 +91,7 @@ class KeycodeState extends State {
       // TODO play sound
     }
   }
-  update(dt) {}
-   
-  
+
   render(ctx) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.drawImage(backgroundkeypad, 0, 0);
@@ -113,11 +111,12 @@ class TransitionToMainState extends State {
     console.log("Exiting Transition To Main State");
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     clearButtons();
+    initPhysics();
   }
   update(dt) {
     this.animPlayer.update(dt);
     if (this.animPlayer.done) {
-      changeState(new MainState());
+      changeState(new PhysicsState());
     }
   }
   render(ctx) {
@@ -126,11 +125,80 @@ class TransitionToMainState extends State {
   }
 }
 
-class MainState extends State {
+class PhysicsState extends State {
+  // The state switching to InspectState is handled in physics.js
   enter() {
-    console.log("Entering Main State");
-    initPhysics();
+    console.log("Entering Physics State");
+    window.physics.startRenderer();
+    window.physics.resumeRunner();
   }
+  exit() {
+    clearButtons();
+    console.log("Exiting Physics State");
+    window.physics.pauseRunner();
+  }
+}
+
+class InspectState extends State {
+  enter() {
+    console.log("Entering Inspect State");
+
+    this.animPlayer = paperAnimPlayer;
+    this.animPlayer.reset();
+
+    this.btn = new Button("closeButton", () => {
+      changeState(new TransitionFromInspectToPhysicsState());
+    }, { x: 750, y: 500 }, { width: 100, height: 50 });
+  }
+  update(dt) {
+    this.animPlayer.update(dt);
+    if (this.animPlayer.justDone) {
+      var iframe = document.getElementById("works-frame")
+      iframe.classList.remove("fadeOut");
+      iframe.classList.add("longFadeIn");
+      iframe.style.pointerEvents = "auto";
+    }
+  }
+  exit() {
+    console.log("Exiting Inspect State");
+    var iframe = document.getElementById("works-frame")
+    iframe.classList.remove("longFadeIn");
+    iframe.classList.add("fadeOut");
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    clearButtons();
+    iframe.style.pointerEvents = "none";
+
+  }
+
+  render(ctx) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this.animPlayer.render(ctx, 300, 100);
+    this.btn.render(ctx);
+  }
+}
+
+class TransitionFromInspectToPhysicsState extends State {
+  enter() {
+    console.log("Entering Transition From Inspect To Physics State");
+    this.animPlayer = reversePaperAnimPlayer;
+    this.animPlayer.reset();
+  }
+  exit() {
+    console.log("Exiting Transition From Inspect To Physics State");
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    clearButtons();
+  }
+  update(dt) {
+    this.animPlayer.update(dt);
+    if (this.animPlayer.done) {
+      changeState(new PhysicsState());
+    }
+  }
+  render(ctx) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this.animPlayer.render(ctx, 0, 0);
+  }
+
 }
 
 function changeState(next) {
@@ -138,3 +206,7 @@ function changeState(next) {
   currentState = next;
   currentState.enter();
 }
+
+window.stateTransition = {
+  changeState,
+};

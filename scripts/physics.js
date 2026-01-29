@@ -1,5 +1,49 @@
 // Physics logic
 const MAX_SPEED = 5;
+let ballIncrement = 0;
+
+class Ball {
+  constructor(x, y, radius, workPath) {
+    this.body = Matter.Bodies.circle(x, y, radius, { restitution: 1, friction: 0, frictionAir: 0,
+      render: {
+        sprite: {
+          texture: 'data/paper-ball.png',
+          xScale: 0.25 * radius / 100,
+          yScale: 0.25 * radius / 100
+        }
+      }
+    });
+
+    Matter.Body.setVelocity(this.body, { x: Math.random()*4 - 2, y: Math.random()*4 - 2 });
+
+    this.workPath = workPath;
+    this.visited = false;
+    this.id = ballIncrement++;
+    this.visible = true;
+  }
+
+  getCoords() {
+    return this.body.position;
+  }
+
+  renderNumber(ctx) {
+    const pos = this.getCoords();
+    
+    if (this.visited) {
+      ctx.fillStyle = "rgba(82, 77, 77, 0.45)";
+    } else {
+      ctx.fillStyle = "rgba(216, 216, 216, 0.57)";
+    }
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(this.id, pos.x, pos.y + 7);
+  }
+}
+
+
+const Balls = [
+  new Ball(200, 200, 100, 'works/example.html'),
+];
 
 function initPhysics() {
   var Engine = Matter.Engine,
@@ -33,32 +77,10 @@ function initPhysics() {
     }
   });
 
-  let circleA = Bodies.circle(150, 100, 100, { restitution: 1, friction: 0, frictionAir: 0,
-    render: {
-      sprite: {
-        texture: 'data/paper-ball.png',
-        xScale: 0.25,
-        yScale: 0.25
-      }
-    },
-    velocity: { x : Math.random()*4 - 2, y: Math.random()*4 - 2 }
-  });
-  let circleB = Bodies.circle(300, 100, 100, { restitution: 1, friction: 0, frictionAir: 0,
-    render: {
-      sprite: {
-        texture: 'data/paper-ball.png',
-        xScale: 0.25,
-        yScale: 0.25
-      }
-    },
-    velocity: { x : Math.random()*4 - 2, y: Math.random()*4 - 2 }
-  });
-
   // add all of the bodies to the world
-  Composite.add(engine.world, [circleA, circleB]);
-
-
-
+  for (const ball of Balls) {
+    Composite.add(engine.world, ball.body);
+  }
 
   function createBounds(width, height, thickness = 100) {
     return [
@@ -137,36 +159,53 @@ function initPhysics() {
     const body = event.body;
     if (body) {
       const mousePosition = mouse.position;
+      
+      const canvas = render.canvas;
+      const canvasRect = canvas.getBoundingClientRect();
+      
+      const scaleX = canvasRect.width / container.clientWidth;
+      const scaleY = canvasRect.height / container.clientHeight;
+      
+      const viewportX = canvasRect.left + (mousePosition.x * scaleX);
+      const viewportY = canvasRect.top + (mousePosition.y * scaleY);
+      
       var center = document.getElementById('center-bounds').getBoundingClientRect();
 
-      if (mousePosition.x > center.left && mousePosition.x < center.right &&
-         mousePosition.y > center.top && mousePosition.y < center.bottom) {
+      if (viewportX > center.left && viewportX < center.right &&
+         viewportY > center.top && viewportY < center.bottom) {
           // If released in center bounds, remove the body
-          Composite.remove(engine.world, body);
+          // apply impulsion to body to take it away from center (it will take effect when the runner is resumed after InspectState)
+          Body.setVelocity(body, { x: Math.cos(Math.random() * Math.PI * 2) * 2, y: Math.sin(Math.random() * Math.PI * 2) * 2 });
+          // find the ball associated with this body
+          const ball = Balls.find(b => b.body === body);
+          ball.visited = true;
+
+          document.getElementById('works-frame').src = ball.workPath;
+
+          window.stateTransition.changeState(new InspectState());
       }
       centerBounds.classList.remove('fadeIn');
       centerBounds.classList.add('fadeOut');
     }
   });
 
-  function stopRunner() {
-    Runner.stop(runner);
-  }
-  function resumeRunner() {
-    Runner.start(runner, engine);
-  }
-
-  window.pos
-
-
-  // run the renderer
-  Render.run(render);
-
   // create runner
   var runner = Runner.create();
 
-  // run the engine
-  Runner.run(runner, engine);
+  function pauseRunner() {
+    Runner.stop(runner);
+  }
+  function resumeRunner() {
+    Runner.run(runner, engine);
+  }
+  function startRenderer() {
+    Render.run(render);
+  }
+  window.physics = {
+    pauseRunner,
+    resumeRunner,
+    startRenderer,
+  };
 
   console.log('Physics initialized');
 }

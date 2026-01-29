@@ -76,7 +76,10 @@ async function bootstrap() {
 
   transitionAnimPlayer = new AnimPlayer(transitionFrames, 30);
   paperAnimPlayer = new AnimPlayer(paperFrames, 10);
-  currentState = new MainState();
+  reversePaperFrames = [...paperFrames].reverse();
+  reversePaperAnimPlayer = new AnimPlayer(reversePaperFrames, 10);
+
+  currentState = new EntranceDoorState();
 
   currentState.enter();
   last = performance.now();

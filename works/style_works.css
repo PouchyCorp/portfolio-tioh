@@ -1,4 +1,7 @@
-
+body {
+    overflow: hidden;
+    background-color: #ffffff00;
+}
 
 .info .rightcollumn {
     padding: 15px;
